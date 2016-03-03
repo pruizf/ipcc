@@ -60,36 +60,62 @@ def tag_txt_batch(svr, dir):
     pass
 
 
-def main(fni):
+def process_file(fni, outdir, pos_dict=None):
     global tags
     global jstags
     server = StanfordCoreNLP("http://localhost:9000")
     dones = 0
-    fno = os.path.join(outdir, os.path.splitext(os.path.basename(fni))[0]
-                       + "_pos2.txt")
-    if os.path.exists(fno):
-        print "= Removing old copy of [{}]".format(fno)
-        os.remove(fno)
-    with codecs.open(fno, "w", "utf8") as fdo:
+    fnpos = os.path.join(outdir, os.path.splitext(os.path.basename(fni))[0]
+                         + "_pos3.txt")
+    fnfrq = os.path.join(outdir, os.path.splitext(os.path.basename(fni))[0]
+                         + "_frq.txt")
+    if os.path.exists(fnpos):
+        print "= Removing old copy of [{}]".format(fnpos)
+        os.remove(fnpos)
+    if os.path.exists(fnfrq):
+        print "= Removing old copy of [{}]".format(fnfrq)
+        os.remove(fnfrq)
+    if pos_dict is None:
+        pos_dict = {}
+    with codecs.open(fnpos, "w", "utf8") as fdpos, \
+         codecs.open(fnfrq, "w", "utf8") as fdfrq:
         for ll in read_csv(fni):
             tags = tag_txt(server, ll)
-            ltoks = extract_pos_tags(tags)
-            for tok in ltoks:
+            linetoks = extract_pos_tags(tags)
+            for tok in linetoks:
+                if len(tok) > 0:
+                    pos_dict.setdefault(tok[1], 0)
+                    pos_dict[tok[1]] += 1
                 ol = "\t".join([unicode(it) for it in tok])
-                fdo.write(u"{}\n".format(ol))
+                fdpos.write(u"{}\n".format(ol))
             #dones += 1
             #if dones == 1:
             #    break
+        for ke, va in sorted(pos_dict.items(), key=lambda tu: -tu[1]):
+            fdfrq.write(u"{}\t{}\n".format(ke, va))
+    return pos_dict
+
+
+def process_dir(dr, out4dir):
+    for idx, fn in enumerate(sorted(os.listdir(dr))):
+        if idx == 0:
+            counts = process_file(os.path.join(dr, fn), {})
+        else:
+            counts = process_file(os.path.join(dr, fn), counts)
 
 
 if __name__ == "__main__":
     try:
         infi = sys.argv[1]
+        #indir = sys.argv[1]
     except IndexError:
         infi = "/home/pablo/Insync/Text IPCC/Corpus/CSV/AR4/AR4-WGI/AR4-WGI.csv"
+        #indir = ""
         #infi = "/home/pablo/projects/clm/ipcc_norm_wk/tests/accents.txt"
     try:
-        outdir = sys.argv[2]
+        outd = sys.argv[2]
     except IndexError:
-        outdir = "/home/pablo/projects/clm/ipcc_norm_wk/out"
-    main(infi)
+        outd = "/home/pablo/projects/clm/ipcc_norm_wk/out"
+        #allout = os.path.join(outdir, os.path.basename(indir))
+    counts = process_file(infi, outd)
+    #process_dir(indir)
