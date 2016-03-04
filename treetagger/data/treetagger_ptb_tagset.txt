@@ -1,0 +1,58 @@
+CC	coordinating conjunction
+CD	cardinal number
+DT	determiner
+EX	existential there
+FW	foreign word
+IN	preposition/subord. conj.
+IN/that	complementizer
+JJ	adjective
+JJR	adjective, comparative
+JJS	adjective, superlative
+LS	list marker
+MD	modal
+NN	noun, singular or mass
+NNS	noun, plural
+NP	proper noun, singular
+NPS	proper noun, plural
+PDT	predeterminer
+POS	possessive ending
+PP	personal pronoun
+PP$	possessive pronoun
+RB	adverb
+RBR	adverb, comparative
+RBS	adverb, superlative
+RP	particle
+SENT	end punctuation
+SYM	symbol
+TO	to
+UH	interjection
+VB	verb, verb be, base form
+VBD	verb, verb be~past
+VBG	verb, verb be~gerund/participle
+VBN	verb, verb be~past participle
+VBZ	verb, verb be~pres~3rd p. sing
+VBP	verb, verb be~pres non-3rd p.
+VD	verb, verb do~base form
+VDD	verb, verb do~past
+VDG	verb, verb do gerund/participle
+VDN	verb, verb do~past participle
+VDZ	verb, verb do~pres~3rd per.sing
+VDP	verb, verb do~pres~non-3rd per.
+VH	verb, verb have~base form
+VHD	verb, verb have~past
+VHG	verb, verb have~gerund/participle
+VHN	verb, verb have~past participle
+VHZ	verb, verb have~pres 3rd per.sing
+VHP	verb, verb have~pres non-3rd per.
+VV	verb, verb~base form
+VVD	verb, verb~past tense
+VVG	verb, verb~gerund/participle
+VVN	verb, verb~past participle
+VVP	verb, verb~present, non-3rd p.
+VVZ	verb, verb~present 3d p. sing.
+WDT	wh-determiner
+WP	wh-pronoun
+WP$	possessive wh-pronoun
+WRB	wh-abverb
+:	general joiner
+$	currency symbol

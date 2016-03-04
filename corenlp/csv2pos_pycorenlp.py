@@ -53,11 +53,13 @@ def read_csv(inf):
             if len(alltxt) > 100000:
                 start = 0
                 final = 100000
-                while len(alltxt[final:]) > 100000:
+                while final < len(alltxt):
+                #while len(alltxt[final:]) > 100000:
                     splits.append(alltxt[start:final])
                     start = final
                     final += 100000
-                splits.append(alltxt[final:])
+                #splits.append(alltxt[final:])
+                splits.append(alltxt[start:])
                 yield splits
             else:
                 yield [alltxt]
@@ -84,11 +86,13 @@ def read_pipe_separated(inf):
             if len(alltxt) > 100000:
                 start = 0
                 final = 100000
-                while len(alltxt[final:]) > 100000:
+                while final < len(alltxt):
+                #while len(alltxt[final:]) > 100000:
                     splits.append(alltxt[start:final])
                     start = final
                     final += 100000
-                splits.append(alltxt[final:])
+                #splits.append(alltxt[final:])
+                splits.append(alltxt[start:])
                 yield splits
             else:
                 yield [alltxt]
@@ -132,8 +136,8 @@ def process_file(fni, outdir, tgmap, fmt="pipes"):
     pos_dict = {}
     with codecs.open(fnpos, "w", "utf8") as fdpos, \
          codecs.open(fnfrq, "w", "utf8") as fdfrq:
-        print "- Writing POS to {}".format(fnpos)
-        print "- Writing Frq to {}".format(fnfrq)
+        print "  - Writing POS to {}".format(fnpos)
+        print "  - Writing Frq to {}".format(fnfrq)
         if fmt == "pipes":
             reader = read_pipe_separated
         else:
@@ -152,6 +156,9 @@ def process_file(fni, outdir, tgmap, fmt="pipes"):
                 if tags == "Could not handle incoming annotation":
                     print u"\n\nSERVER_ERROR: [PART={}||LINE={}]\n\n".format(
                         repr(bit), "")
+                    continue
+                elif isinstance(tags, unicode) and tags.startswith("<head>\n"):
+                    print u"\n\nRESPONSE_ERROR\n\n"
                     continue
                 linetoks = extract_pos_tags(tags)
                 for tok in linetoks:
