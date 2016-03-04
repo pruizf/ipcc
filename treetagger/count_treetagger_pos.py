@@ -72,6 +72,7 @@ if __name__ == "__main__":
     try:
         indir = sys.argv[1]
     except IndexError:
+        #indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger_orig"
         indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger_orig"
     outdir = indir + "_counts"
     if not os.path.exists(outdir):

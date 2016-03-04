@@ -10,6 +10,10 @@ fi
 
 for fn in $(ls "$indir"); do
   echo -e "\n$fn\n"
-  cat "$indir/$fn" | sed -e 's/</ /g' | "$tagger" > "$outdir/${fn}_new"
+  if [ ! -f "$indir/$fn" ]; then
+    echo "- Skipping [$fn]"
+    continue
+  fi
+  cat "$indir/$fn" | sed -e 's/</ /g' | "$tagger" > "$outdir/${fn}"
   #cat "$indir/$fn" | "$tagger" > "$outdir/${fn}"
 done
