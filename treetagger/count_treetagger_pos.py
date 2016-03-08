@@ -31,8 +31,9 @@ def create_tagset_map():
     return tagmap
 
 
-def count_tags_for_file(fi):
+def count_tags_for_file(fi, tm):
     tagcount = {}
+    summary = {}
     with codecs.open(fi, "r", "utf8") as fdi:
         line = fdi.readline()
         while line:
@@ -40,22 +41,35 @@ def count_tags_for_file(fi):
             try:
                 tagcount.setdefault(sl[1], 0)
                 tagcount[sl[1]] += 1
+                if not sl[1]:
+                    import pdb;pdb.set_trace()
+                summary.setdefault(tm[sl[1]]["short"], 0)
+                summary[tm[sl[1]]["short"]] += 1
+            except KeyError:
+                #import pdb;pdb.set_trace()
+                summary.setdefault(sl[1], 0)
+                summary[sl[1]] += 1
             except IndexError:
+                #import pdb;pdb.set_trace()
                 print u"ERROR\n{}\n".format(line)
                 line = fdi.readline()
                 continue
             line = fdi.readline()
-    return tagcount
+    #TODO: check one more file for counts
+    #TODO: add percentages??
+    return tagcount, summary
+
+#TODO: add stuff to count lemmas
 
 
-def run_dir(di, tgmap, odi):
+def run_dir(di, tgmap, odi, osu):
     for fn in os.listdir(di):
         print "- Processing {}".format(fn)
         ffn = os.path.join(di, fn)
-        fcounts = count_tags_for_file(ffn)
+        fcounts, scounts = count_tags_for_file(ffn, tgmap)
+        #import pdb;pdb.set_trace()
+        # detailed output infos
         with codecs.open(os.path.join(odi, fn), "w", "utf8") as ofd:
-            # for ke, va in sorted(fcounts.items(), key=lambda tu: -tu[1]):
-            #     ofd.write(u"{}\t{}\n".format(ke, va))
             for ke, va in sorted(fcounts.items(), key=lambda tu: -tu[1]):
                 try:
                     ol1 = "\t".join((tgmap[ke]["short"], ke))
@@ -65,6 +79,10 @@ def run_dir(di, tgmap, odi):
                     ol1 = "\t".join((ke, ke))
                     ol2 = ke
                 ofd.write(u"{}\t{}\t{}\n".format(ol1, va, ol2))
+        # summarized output infos
+        with codecs.open(os.path.join(osu, fn), "w", "utf8") as osfd:
+            for ke, va in sorted(scounts.items(), key=lambda tu: -tu[1]):
+                osfd.write(u"{}\t{}\n".format(ke, va))
 
 
 if __name__ == "__main__":
@@ -73,8 +91,10 @@ if __name__ == "__main__":
         indir = sys.argv[1]
     except IndexError:
         #indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger_orig"
-        indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger_new"
-    outdir = indir + "_counts"
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-    run_dir(indir, tmap, outdir)
+        indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new"
+    outdir = indir + "_counts2"
+    summaries = indir + "_summaries2"
+    for dr in (outdir, summaries):
+        if not os.path.exists(dr):
+            os.makedirs(dr)
+    run_dir(indir, tmap, outdir, summaries)
