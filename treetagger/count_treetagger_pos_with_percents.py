@@ -76,11 +76,13 @@ def count_tags_for_file(fi, tm):
         tagcount[ke]["percent"] = 100 * float(va["count"]) / ttlcount
         ttltagcpc += tagcount[ke]["percent"]
     assert_almost_equal(ttltagcpc, 100)
+    tagcount["total_count"] = {"count": ttlcount, "percent": 100}
     for ke, va in summary.items():
         assert not summary[ke]["percent"]
         summary[ke]["percent"] = 100 * float(va["count"]) / ttlsummary
         ttlsummpc += summary[ke]["percent"]
     assert_almost_equal(ttlsummpc, 100)
+    summary["total_count"] = {"count": ttlsummary, "percent": 100}
     return tagcount, summary
 
 
@@ -114,11 +116,13 @@ def count_word_forms_for_pos(fi, tm):
     totspercat = {}
     for ke2, va2 in co.items():
         totspercat[ke2] = sum([vl[-1] for vl in va2])
-    #totalvals = sum([cv[-1] for cv in co.values()])
     for ke3, valist in co.items():
+        totpcnt = 0
         for val in valist:
             # val[1] is freq
             val.append(100 * float(val[1]) / totspercat[ke3])
+            totpcnt += 100 * float(val[1]) / totspercat[ke3]
+        assert_almost_equal(totpcnt, 100)
     return co
 
 
@@ -134,6 +138,8 @@ def run_dir(di, tgmap, odi, osu, td):
         with codecs.open(os.path.join(odi, fn), "w", "utf8") as ofd:
             for ke, va in sorted(fcounts.items(),
                                  key=lambda tu: -tu[1]["count"]):
+                if ke == "total_count":
+                    continue
                 try:
                     ol1 = "\t".join((tgmap[ke]["short"], ke))
                     ol2 = tgmap[ke]["long"]
@@ -143,12 +149,19 @@ def run_dir(di, tgmap, odi, osu, td):
                     ol2 = ke
                 ofd.write(u"{}\t{}\t{}\t{}\n".format(ol1, va["count"],
                                                      va["percent"], ol2))
+            ofd.write(u"{}\t{}\t{}\t{}\n".format(
+                "total_count\ttotal_count", fcounts["total_count"]["count"],
+                100, "total_count"))
         # summarized output infos
         with codecs.open(os.path.join(osu, fn), "w", "utf8") as osfd:
             for ke2, va2 in sorted(scounts.items(),
                                    key=lambda tu: -tu[1]["count"]):
+                if ke2 == "total_count":
+                    continue
                 osfd.write(u"{}\t{}\t{}\n".format(ke2, va2["count"],
                                                   va2["percent"]))
+            osfd.write(u"{}\t{}\t{}\n".format(
+                "total_count", scounts["total_count"]["count"], 100))
         # top-N infos
         with codecs.open(os.path.join(td, fn), "w", "utf8") as tfd:
             for pos in POS4TOPS:
@@ -164,9 +177,9 @@ if __name__ == "__main__":
     except IndexError:
         #indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger_orig"
         indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new"
-    outdir = indir + "_counts5"
-    summaries = indir + "_summaries5"
-    tops = indir + "_tops4"
+    outdir = indir + "_counts6"
+    summaries = indir + "_summaries6"
+    tops = indir + "_tops6"
     for dr in (outdir, summaries, tops):
         if not os.path.exists(dr):
             os.makedirs(dr)
