@@ -7,6 +7,7 @@ __email__ = 'pabloruizfabo@gmail.com'
 import codecs
 from collections import Counter
 import inspect
+from numpy.testing import assert_almost_equal
 import os
 from string import punctuation
 import sys
@@ -68,12 +69,18 @@ def count_tags_for_file(fi, tm):
     # percentages
     ttlcount = sum([va["count"] for va in tagcount.values()])
     ttlsummary = sum([va["count"] for va in summary.values()])
+    ttltagcpc = 0
+    ttlsummpc = 0
     for ke, va in tagcount.items():
         assert not tagcount[ke]["percent"]
         tagcount[ke]["percent"] = 100 * float(va["count"]) / ttlcount
+        ttltagcpc += tagcount[ke]["percent"]
+    assert_almost_equal(ttltagcpc, 100)
     for ke, va in summary.items():
         assert not summary[ke]["percent"]
         summary[ke]["percent"] = 100 * float(va["count"]) / ttlsummary
+        ttlsummpc += summary[ke]["percent"]
+    assert_almost_equal(ttlsummpc, 100)
     return tagcount, summary
 
 
@@ -157,8 +164,8 @@ if __name__ == "__main__":
     except IndexError:
         #indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger_orig"
         indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new"
-    outdir = indir + "_counts4"
-    summaries = indir + "_summaries4"
+    outdir = indir + "_counts5"
+    summaries = indir + "_summaries5"
     tops = indir + "_tops4"
     for dr in (outdir, summaries, tops):
         if not os.path.exists(dr):
