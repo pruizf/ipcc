@@ -1,0 +1,34 @@
+noun
+verb
+adjective
+adverb
+proper noun
+modal
+#cardinal number
+#coordinating conjunction
+#currency symbol
+#determiner
+#end punctuation
+#existential there
+#foreign word
+#general joiner
+#interjection
+#list marker
+#particle
+#personal pronoun
+#possessive ending
+#possessive pronoun
+#possessive wh-pronoun
+#predeterminer
+#preposition/subord. conj.
+#symbol
+#to
+#wh-abverb
+#wh-determiner
+#wh-pronoun
+#``
+#,
+#''
+#(
+#)
+##
