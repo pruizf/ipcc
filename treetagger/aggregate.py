@@ -21,7 +21,7 @@ sys.path.append(here)
 # to sort filenames and pos tags
 fsorter = [ll.strip() for ll in codecs.open(
     os.path.join(os.path.join(here, "data"), "sort_filenames.txt"),
-    "r", "utf8").readlines()]
+    "r", "utf8").readlines() if not ll.startswith("#")]
 psorter = [ll.strip() for ll in codecs.open(
     os.path.join(os.path.join(here, "data"), "sort_pos.txt"),
     "r", "utf8").readlines() if not ll.startswith("#")]
@@ -29,9 +29,10 @@ psorter = [ll.strip() for ll in codecs.open(
 try:
     pcdir = sys.argv[1]
 except IndexError:
-    pcdir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new_summaries6"
-ofile = os.path.join(os.path.join(pcdir, os.pardir), "pos_by_fn.tsv")
-ofile2 = os.path.join(os.path.join(pcdir, os.pardir), "fn_by_pos.tsv")
+    #pcdir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new_summaries6"
+    pcdir = "/home/pablo/projects/clm/ipcc_norm_wk/CSV_03302016_ttg_summaries_03302016"
+ofile = os.path.join(os.path.join(pcdir, os.pardir), "pos2fn_03302016.tsv")
+ofile2 = os.path.join(os.path.join(pcdir, os.pardir), "fn2pos_03302016.tsv")
 
 
 def aggregate(idir, fsort, psort):

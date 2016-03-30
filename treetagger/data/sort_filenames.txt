@@ -1,26 +1,43 @@
+## AR2
+#             1
 AR2_WG1_Rap.csv
 AR2_WG1_SPM.csv
 AR2_WG1_TS.csv
+#             2
 AR2_WG2_Rap.csv
-AR2-WGII-SPM.csv
+AR2_WG2_SPM.csv
+#             S
+AR2_SYR_SPM.csv
+## AR3
+#             1
 AR3_WG1_Rap.csv
 AR3_WG1_SPM.csv
 AR3_WG1_TS.csv
+#             2
 AR3_WG2_Rap.csv
 AR3_WG2_SPM.csv
 AR3_WG2_TS.csv
+#             3
 AR3_WG3_Rap.csv
 AR3_WG3_SPM.csv
 AR3_WG3_TS.csv
+## AR4
+#             1
 AR4-WGI.csv
 AR4-WGI-SPM.csv
 AR4-WGI-TS.csv
+#             2
 AR4-WGII.csv
 AR4-WGII-TS.csv
+AR4-WGII-SPM.csv
+#             3
 AR4-WGIII.csv
 AR4-WGIII-SPM.csv
 AR4-WGIII-TS.csv
+## AR5
+#             1
 AR5-WGI.csv
 AR5-WGI-SPM.csv
 AR5-WGI-TS.csv
+#             3
 AR5-WGIII.csv
