@@ -194,9 +194,9 @@ if __name__ == "__main__":
         print usage
         sys.exit(2)
     # outdirs
-    outdir = indir + "_counts_{}".format(suffix)
-    summaries = indir + "_summaries_{}".format(suffix)
-    tops = indir + "_tops_{}".format(suffix)
+    outdir = indir + "_fine_tags_{}".format(suffix)
+    summaries = indir + "_coarse_tags_{}".format(suffix)
+    tops = indir + "_top_forms_per_tag_{}".format(suffix)
     # Run ----
     print "\n+ Output dirs:\n  - {}\n  - {}\n  - {}\n".format(
         outdir, summaries, tops)
