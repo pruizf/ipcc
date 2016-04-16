@@ -7,6 +7,7 @@ __email__ = 'pabloruizfabo@gmail.com'
 import codecs
 from collections import Counter
 import inspect
+from numpy.testing import assert_almost_equal
 import os
 from string import punctuation
 import sys
@@ -46,21 +47,42 @@ def count_tags_for_file(fi, tm):
         while line:
             sl = line.strip().split("\t")
             try:
-                tagcount.setdefault(sl[1], 0)
-                tagcount[sl[1]] += 1
+                tagcount.setdefault(sl[1], {"count": 0,
+                                            "percent": 0})
+                tagcount[sl[1]]["count"] += 1
                 if not sl[1]:
                     import pdb;pdb.set_trace()
-                summary.setdefault(tm[sl[1]]["short"], 0)
-                summary[tm[sl[1]]["short"]] += 1
+                summary.setdefault(tm[sl[1]]["short"], {"count": 0,
+                                                        "percent": 0})
+                summary[tm[sl[1]]["short"]]["count"] += 1
             except KeyError:
-                summary.setdefault(sl[1], 0)
-                summary[sl[1]] += 1
+                # must be cases where there's no normalized tag
+                # (e.g. punctuation, where the tag is the character)
+                summary.setdefault(sl[1], {"count": 0,
+                                           "percent": 0})
+                summary[sl[1]]["count"] += 1
             except IndexError:
                 print u"ERROR\n{}\n".format(line)
                 line = fdi.readline()
                 continue
             line = fdi.readline()
-    #TODO: add percentages??
+    # percentages
+    ttlcount = sum([va["count"] for va in tagcount.values()])
+    ttlsummary = sum([va["count"] for va in summary.values()])
+    ttltagcpc = 0
+    ttlsummpc = 0
+    for ke, va in tagcount.items():
+        assert not tagcount[ke]["percent"]
+        tagcount[ke]["percent"] = 100 * float(va["count"]) / ttlcount
+        ttltagcpc += tagcount[ke]["percent"]
+    assert_almost_equal(ttltagcpc, 100)
+    tagcount["total_count"] = {"count": ttlcount, "percent": 100}
+    for ke, va in summary.items():
+        assert not summary[ke]["percent"]
+        summary[ke]["percent"] = 100 * float(va["count"]) / ttlsummary
+        ttlsummpc += summary[ke]["percent"]
+    assert_almost_equal(ttlsummpc, 100)
+    summary["total_count"] = {"count": ttlsummary, "percent": 100}
     return tagcount, summary
 
 
@@ -88,8 +110,19 @@ def count_word_forms_for_pos(fi, tm):
             line = fdi.readline()
     for ke, va in di.items():
         if ke in POS4TOPS:
-            co[ke] = [(k, v) for (k, v) in sorted(
+            co[ke] = [[k, v] for (k, v) in sorted(
                 Counter(va).items(), key=lambda kv: -kv[1])][0:TOPTERMS]
+    # add percentages
+    totspercat = {}
+    for ke2, va2 in co.items():
+        totspercat[ke2] = sum([vl[-1] for vl in va2])
+    for ke3, valist in co.items():
+        totpcnt = 0
+        for val in valist:
+            # val[1] is freq
+            val.append(100 * float(val[1]) / totspercat[ke3])
+            totpcnt += 100 * float(val[1]) / totspercat[ke3]
+        assert_almost_equal(totpcnt, 100)
     return co
 
 
@@ -103,7 +136,10 @@ def run_dir(di, tgmap, odi, osu, td):
         tcounts = count_word_forms_for_pos(ffn, tgmap)
         # detailed output infos
         with codecs.open(os.path.join(odi, fn), "w", "utf8") as ofd:
-            for ke, va in sorted(fcounts.items(), key=lambda tu: -tu[1]):
+            for ke, va in sorted(fcounts.items(),
+                                 key=lambda tu: -tu[1]["count"]):
+                if ke == "total_count":
+                    continue
                 try:
                     ol1 = "\t".join((tgmap[ke]["short"], ke))
                     ol2 = tgmap[ke]["long"]
@@ -111,28 +147,60 @@ def run_dir(di, tgmap, odi, osu, td):
                     # tags that equal the word-form (punctuation)
                     ol1 = "\t".join((ke, ke))
                     ol2 = ke
-                ofd.write(u"{}\t{}\t{}\n".format(ol1, va, ol2))
+                ofd.write(u"{}\t{}\t{}\t{}\n".format(ol1, va["count"],
+                                                     va["percent"], ol2))
+            ofd.write(u"{}\t{}\t{}\t{}\n".format(
+                "total_count\ttotal_count", fcounts["total_count"]["count"],
+                100, "total_count"))
         # summarized output infos
         with codecs.open(os.path.join(osu, fn), "w", "utf8") as osfd:
-            for ke2, va2 in sorted(scounts.items(), key=lambda tu: -tu[1]):
-                osfd.write(u"{}\t{}\n".format(ke2, va2))
+            for ke2, va2 in sorted(scounts.items(),
+                                   key=lambda tu: -tu[1]["count"]):
+                if ke2 == "total_count":
+                    continue
+                osfd.write(u"{}\t{}\t{}\n".format(ke2, va2["count"],
+                                                  va2["percent"]))
+            osfd.write(u"{}\t{}\t{}\n".format(
+                "total_count", scounts["total_count"]["count"], 100))
         # top-N infos
         with codecs.open(os.path.join(td, fn), "w", "utf8") as tfd:
             for pos in POS4TOPS:
-                for ke3, va3 in tcounts[pos]:
-                    tfd.write(u"{}\t{}\t{}\n".format(pos, ke3, va3))
+                #tcounts: 0 is wf, 1 is count, 2 is percent
+                for wf, frq, pcnt in tcounts[pos]:
+                    tfd.write(u"{}\t{}\t{}\t{}\n".format(pos, wf, frq, pcnt))
 
 
 if __name__ == "__main__":
-    tmap = create_tagset_map()
+    usage = "Usage: {} input_dir suffix".format(sys.argv[0])
+    # IO ----
+    try:
+        assert len(sys.argv) == 1 or len(sys.argv) == 3
+    except AssertionError:
+        print usage
+    # indir
     try:
         indir = sys.argv[1]
     except IndexError:
         #indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger_orig"
-        indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new"
-    outdir = indir + "_counts3"
-    summaries = indir + "_summaries3"
-    tops = indir + "_tops3"
+        #indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new"
+        indir = "/home/pablo/projects/clm/ipcc_norm_wk/CSV_04152016_ttg"
+    if not os.path.exists(indir):
+        print "Input path not found: {}".format(indir)
+        sys.exit(2)
+    # suffix
+    try:
+        suffix = sys.argv[2]
+    except IndexError:
+        print usage
+        sys.exit(2)
+    # outdirs
+    outdir = indir + "_counts_{}".format(suffix)
+    summaries = indir + "_summaries_{}".format(suffix)
+    tops = indir + "_tops_{}".format(suffix)
+    # Run ----
+    print "\n+ Output dirs:\n  - {}\n  - {}\n  - {}\n".format(
+        outdir, summaries, tops)
+    tmap = create_tagset_map()
     for dr in (outdir, summaries, tops):
         if not os.path.exists(dr):
             os.makedirs(dr)
