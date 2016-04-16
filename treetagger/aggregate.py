@@ -1,4 +1,6 @@
-"""Aggregate percentages of part--of-speech tags in IPCC"""
+"""
+Aggregate percentages of part--of-speech tags in IPCC into overall tables for the corpus.
+"""
 
 __author__ = 'Pablo Ruiz'
 __date__ = '27/03/16'
@@ -7,7 +9,6 @@ __email__ = 'pabloruizfabo@gmail.com'
 
 import codecs
 import inspect
-from numpy.testing import assert_almost_equal
 import os
 import sys
 
@@ -26,13 +27,17 @@ psorter = [ll.strip() for ll in codecs.open(
     os.path.join(os.path.join(here, "data"), "sort_pos.txt"),
     "r", "utf8").readlines() if not ll.startswith("#")]
 # percentages of pos per file
+suffix = "04152016"
 try:
     pcdir = sys.argv[1]
 except IndexError:
     #pcdir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new_summaries6"
-    pcdir = "/home/pablo/projects/clm/ipcc_norm_wk/CSV_03302016_ttg_summaries_03302016"
-ofile = os.path.join(os.path.join(pcdir, os.pardir), "pos2fn_03302016.tsv")
-ofile2 = os.path.join(os.path.join(pcdir, os.pardir), "fn2pos_03302016.tsv")
+    pcdir = "/home/pablo/projects/clm/ipcc_norm_wk/CSV_{}_ttg_summaries_{}".format(
+        suffix, suffix)
+ofile = os.path.join(os.path.join(pcdir, os.pardir),
+                     "pos2fn_{}.tsv".format(suffix))
+ofile2 = os.path.join(os.path.join(pcdir, os.pardir),
+                      "fn2pos_{}.tsv".format(suffix))
 
 
 def aggregate(idir, fsort, psort):

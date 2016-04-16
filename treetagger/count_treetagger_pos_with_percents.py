@@ -177,13 +177,13 @@ if __name__ == "__main__":
     except IndexError:
         #indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger_orig"
         #indir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new"
-        indir = "/home/pablo/projects/clm/ipcc_norm_wk/CSV_03302016_ttg"
+        indir = "/home/pablo/projects/clm/ipcc_norm_wk/CSV_04152016_ttg"
     if not os.path.exists(indir):
         print "Input path not found: {}".format(indir)
         sys.exit(2)
-    outdir = indir + "_counts_03302016"
-    summaries = indir + "_summaries_03302016"
-    tops = indir + "_tops_0330206"
+    outdir = indir + "_counts_04152016"
+    summaries = indir + "_summaries_04152016"
+    tops = indir + "_tops_0415206"
     for dr in (outdir, summaries, tops):
         if not os.path.exists(dr):
             os.makedirs(dr)

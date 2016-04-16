@@ -1,43 +1,68 @@
-## AR2
-#             1
+##AR1
+AR1_SYR_SPM.csv
+AR1_WG1_Rap.csv
+AR1_WG1_SPM.csv
+AR1_WG2_Rap.csv
+AR1_WG2_SPM.csv
+AR1_WG3_Rap.csv
+AR1_WG3_SPM.csv
+##AR2
+AR2_SYR_SPM.csv
 AR2_WG1_Rap.csv
 AR2_WG1_SPM.csv
 AR2_WG1_TS.csv
-#             2
 AR2_WG2_Rap.csv
 AR2_WG2_SPM.csv
-#             S
-AR2_SYR_SPM.csv
-## AR3
-#             1
+AR2_WG2_TS.csv
+AR2_WG3_Rap.csv
+AR2_WG3_SPM.csv
+##AR3
+#AR3_SYR
+AR3_SYR.csv
+AR3_SYR_SPM.csv
+#AR3/AR3_WG1
 AR3_WG1_Rap.csv
 AR3_WG1_SPM.csv
 AR3_WG1_TS.csv
-#             2
+#AR3/AR3_WG2
 AR3_WG2_Rap.csv
 AR3_WG2_SPM.csv
 AR3_WG2_TS.csv
-#             3
+#AR3/AR3_WG3
 AR3_WG3_Rap.csv
 AR3_WG3_SPM.csv
 AR3_WG3_TS.csv
-## AR4
-#             1
-AR4-WGI.csv
-AR4-WGI-SPM.csv
-AR4-WGI-TS.csv
-#             2
-AR4-WGII.csv
-AR4-WGII-TS.csv
-AR4-WGII-SPM.csv
-#             3
-AR4-WGIII.csv
-AR4-WGIII-SPM.csv
-AR4-WGIII-TS.csv
-## AR5
-#             1
-AR5-WGI.csv
-AR5-WGI-SPM.csv
-AR5-WGI-TS.csv
-#             3
-AR5-WGIII.csv
+##AR4
+#AR4-SYR
+#AR4/AR4-SYR/AR4_SYR (2).csv
+AR4_SYR.csv
+AR4_SYR_SPM.csv
+#AR4/AR4-WG1
+AR4_WG1_Rap.csv
+AR4_WG1_SPM.csv
+AR4_WG1_TS.csv
+#AR4/AR4-WG2
+AR4_WG2_Rap.csv
+AR4_WG2_SPM.csv
+AR4_WG2_TS.csv
+#AR4/AR4-WG3
+AR4_WG3_Rap.csv
+AR4_WG3_SPM.csv
+AR4_WG3_TS.csv
+##AR5
+#AR5/AR5-SYR
+#AR5/AR5-SYR/AR5_SYR (2).csv
+AR5_SYR.csv
+AR5_SYR_SPM.csv
+#AR5/AR5-WG1
+#AR5/AR5-WG1/AR5-WG1 (2).csv
+AR5-WG1.csv
+AR5-WG1-TS.csv
+#AR5/AR5-WG2
+AR5-WG2_nosubchapt.csv
+AR5_WG2_SPM.csv
+AR5-WG2_subchapt.csv
+AR5_WG2_TS.csv
+#AR5/AR5-WG3
+AR5-WG3.csv
+AR5WG3_TS.csv
