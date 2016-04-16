@@ -18,22 +18,33 @@ here = os.path.dirname(os.path.abspath(
 sys.path.append(here)
 
 
-# I/O
-# to sort filenames and pos tags
+# Data to sort filenames and pos tags =====================
 fsorter = [ll.strip() for ll in codecs.open(
     os.path.join(os.path.join(here, "data"), "sort_filenames.txt"),
     "r", "utf8").readlines() if not ll.startswith("#")]
 psorter = [ll.strip() for ll in codecs.open(
     os.path.join(os.path.join(here, "data"), "sort_pos.txt"),
     "r", "utf8").readlines() if not ll.startswith("#")]
+
+
+# I/O =====================================================
+usage = "Usage: python {} input_dir suffix".format(sys.argv[0])
+try:
+    assert len(sys.argv) == 1 or len(sys.argv) == 3
+except AssertionError:
+    print usage
 # percentages of pos per file
-suffix = "04152016"
 try:
     pcdir = sys.argv[1]
 except IndexError:
-    #pcdir = "/home/pablo/projects/clm/ipcc_norm_wk/out_treetagger/final/out_treetagger_new_summaries6"
-    pcdir = "/home/pablo/projects/clm/ipcc_norm_wk/CSV_{}_ttg_summaries_{}".format(
-        suffix, suffix)
+    print usage
+    sys.exit(2)
+try:
+    suffix = sys.argv[2]
+except IndexError:
+    print usage
+    sys.exit(2)
+# out
 ofile = os.path.join(os.path.join(pcdir, os.pardir),
                      "pos2fn_{}.tsv".format(suffix))
 ofile2 = os.path.join(os.path.join(pcdir, os.pardir),
@@ -88,6 +99,7 @@ def write2(di, fsort, psort, ofn):
 
 
 if __name__ == "__main__":
+    print "\n+ Output files:\n  - {}\n  - {}\n".format(ofile, ofile2)
     infos = aggregate(pcdir, fsorter, psorter)
     write(infos, fsorter, psorter, ofile)
     write2(infos, fsorter, psorter, ofile2)

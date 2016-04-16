@@ -171,7 +171,13 @@ def run_dir(di, tgmap, odi, osu, td):
 
 
 if __name__ == "__main__":
-    tmap = create_tagset_map()
+    usage = "Usage: {} input_dir suffix".format(sys.argv[0])
+    # IO ----
+    try:
+        assert len(sys.argv) == 1 or len(sys.argv) == 3
+    except AssertionError:
+        print usage
+    # indir
     try:
         indir = sys.argv[1]
     except IndexError:
@@ -181,9 +187,20 @@ if __name__ == "__main__":
     if not os.path.exists(indir):
         print "Input path not found: {}".format(indir)
         sys.exit(2)
-    outdir = indir + "_counts_04152016"
-    summaries = indir + "_summaries_04152016"
-    tops = indir + "_tops_0415206"
+    # suffix
+    try:
+        suffix = sys.argv[2]
+    except IndexError:
+        print usage
+        sys.exit(2)
+    # outdirs
+    outdir = indir + "_counts_{}".format(suffix)
+    summaries = indir + "_summaries_{}".format(suffix)
+    tops = indir + "_tops_{}".format(suffix)
+    # Run ----
+    print "\n+ Output dirs:\n  - {}\n  - {}\n  - {}\n".format(
+        outdir, summaries, tops)
+    tmap = create_tagset_map()
     for dr in (outdir, summaries, tops):
         if not os.path.exists(dr):
             os.makedirs(dr)

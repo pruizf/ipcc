@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
 
 basedir="$1"
-odir="$2"
+suffix="$2" # to name directories
 
+
+if [ -z "$2" ]; then
+  echo "Usage: $0 out_dir suffix"
+  exit
+fi
+
+# outdir
+odir="$1_ttg"
+echo -e "== Writing to [${odir}] ==\n"
+
+# treetagger
 for vol in 1 2; do
   dn="$basedir/AR${vol}"
   echo "== Processing $dn =="
@@ -27,3 +38,13 @@ for vol2 in 3 4 5; do
     fi
   done
 done
+
+# counts and overall table
+    #https://stackoverflow.com/questions/59895/
+SCRDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+COUNTER="${SCRDIR}/count_treetagger_pos_with_percents.py"
+AGG="${SCRDIR}/aggregate.py"
+echo -e "\n\n== POS-Tag counts [${COUNTER}] ==\n"
+python "$COUNTER" "$odir" "$suffix"
+echo -e "\n\n== Create OVERALL TABLES [${AGG}] ==\n"
+python "$AGG" "${odir}_summaries_${suffix}" "$suffix"
