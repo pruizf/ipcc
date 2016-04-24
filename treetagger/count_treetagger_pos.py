@@ -1,4 +1,5 @@
-"""#"""
+"""Count part-of-speech tags from treetagger output and produce svrl ouptut files"""
+
 __author__ = 'Pablo Ruiz'
 __date__ = '04/03/16'
 __email__ = 'pabloruizfabo@gmail.com'
