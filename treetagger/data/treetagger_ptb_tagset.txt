@@ -7,7 +7,6 @@ DT	determiner
 EX	existential there
 FW	foreign word
 IN	preposition/subord. conj.
-#IN/that	complementizer
 JJ	adjective
 JJR	adjective, comparative
 JJS	adjective, superlative
@@ -35,6 +34,13 @@ VBG	verb, verb~gerund/participle
 VBN	verb, verb~past participle
 VBZ	verb, verb~pres~3rd p. sing
 VBP	verb, verb~pres non-3rd p.
+WDT	wh-determiner
+WP	wh-pronoun
+WP$	possessive wh-pronoun
+WRB	wh-abverb
+:	general joiner
+$	currency symbol
+#IN/that	complementizer
 #VBD	verb, verb be~past
 #VBG	verb, verb be~gerund/participle
 #VBN	verb, verb be~past participle
@@ -58,9 +64,3 @@ VBP	verb, verb~pres non-3rd p.
 #VVN	verb, verb~past participle
 #VVP	verb, verb~present, non-3rd p.
 #VVZ	verb, verb~present 3d p. sing.
-WDT	wh-determiner
-WP	wh-pronoun
-WP$	possessive wh-pronoun
-WRB	wh-abverb
-:	general joiner
-$	currency symbol
