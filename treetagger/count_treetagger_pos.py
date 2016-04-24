@@ -29,6 +29,9 @@ def create_tagset_map():
         tagmap = {}
         line = infi.readline()
         while line:
+            if line.startswith("#"):
+                line = infi.readline()
+                continue
             sl = line.split("\t")
             label, llabel, slabel = (
                 sl[0], sl[1].strip().lower(),

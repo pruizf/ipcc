@@ -5,7 +5,13 @@ suffix="$2" # to name directories
 
 
 if [ -z "$2" ]; then
-  echo "Usage: $0 out_dir suffix"
+  echo "Usage: $0 in_dir suffix".
+  echo "       Creates {in_dir}_ttg: raw treetagger results"
+  echo "               {in_dir}_coarse_tags_{suffix}: coarse tag tables"
+  echo "               {in_dir}_fine_tags_{suffix}: fine tag tables"
+  echo "               {in_dir}_top_forms_per_tag_{suffix}: top terms for some tags"
+  echo "               {in_dir}/fn2pos_{suffix}.tsv: aggregated fn-to-pos for some tags"
+  echo "               {in_dir}/pos2fn_{suffix}.tsv: aggregated pos-to-fn for some tags"
   exit
 fi
 

@@ -1,10 +1,13 @@
+# had originally taken this: https://courses.washington.edu/hypertxt/csar-v02/penntable.html
+# however, looking at the results, the right tagset is this: http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/Penn-Treebank-Tagset.pdf
+# that tagset is just like what the current param file tags (misses only $, SENT, : from current param file output)
 CC	coordinating conjunction
 CD	cardinal number
 DT	determiner
 EX	existential there
 FW	foreign word
 IN	preposition/subord. conj.
-IN/that	complementizer
+#IN/that	complementizer
 JJ	adjective
 JJR	adjective, comparative
 JJS	adjective, superlative
@@ -26,30 +29,35 @@ SENT	end punctuation
 SYM	symbol
 TO	to
 UH	interjection
-VB	verb, verb be, base form
-VBD	verb, verb be~past
-VBG	verb, verb be~gerund/participle
-VBN	verb, verb be~past participle
-VBZ	verb, verb be~pres~3rd p. sing
-VBP	verb, verb be~pres non-3rd p.
-VD	verb, verb do~base form
-VDD	verb, verb do~past
-VDG	verb, verb do gerund/participle
-VDN	verb, verb do~past participle
-VDZ	verb, verb do~pres~3rd per.sing
-VDP	verb, verb do~pres~non-3rd per.
-VH	verb, verb have~base form
-VHD	verb, verb have~past
-VHG	verb, verb have~gerund/participle
-VHN	verb, verb have~past participle
-VHZ	verb, verb have~pres 3rd per.sing
-VHP	verb, verb have~pres non-3rd per.
-VV	verb, verb~base form
-VVD	verb, verb~past tense
-VVG	verb, verb~gerund/participle
-VVN	verb, verb~past participle
-VVP	verb, verb~present, non-3rd p.
-VVZ	verb, verb~present 3d p. sing.
+VB	verb, verb~base form
+VBD	verb, verb~past
+VBG	verb, verb~gerund/participle
+VBN	verb, verb~past participle
+VBZ	verb, verb~pres~3rd p. sing
+VBP	verb, verb~pres non-3rd p.
+#VBD	verb, verb be~past
+#VBG	verb, verb be~gerund/participle
+#VBN	verb, verb be~past participle
+#VBZ	verb, verb be~pres~3rd p. sing
+#VBP	verb, verb be~pres non-3rd p.
+#VD	verb, verb do~base form
+#VDD	verb, verb do~past
+#VDG	verb, verb do gerund/participle
+#VDN	verb, verb do~past participle
+#VDZ	verb, verb do~pres~3rd per.sing
+#VDP	verb, verb do~pres~non-3rd per.
+#VH	verb, verb have~base form
+#VHD	verb, verb have~past
+#VHG	verb, verb have~gerund/participle
+#VHN	verb, verb have~past participle
+#VHZ	verb, verb have~pres 3rd per.sing
+#VHP	verb, verb have~pres non-3rd per.
+#VV	verb, verb~base form
+#VVD	verb, verb~past tense
+#VVG	verb, verb~gerund/participle
+#VVN	verb, verb~past participle
+#VVP	verb, verb~present, non-3rd p.
+#VVZ	verb, verb~present 3d p. sing.
 WDT	wh-determiner
 WP	wh-pronoun
 WP$	possessive wh-pronoun
