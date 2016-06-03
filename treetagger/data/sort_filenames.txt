@@ -50,19 +50,25 @@ AR4_WG3_Rap.csv
 AR4_WG3_SPM.csv
 AR4_WG3_TS.csv
 ##AR5
+## note: some renaming took place on AR5 (May 9)
 #AR5/AR5-SYR
 #AR5/AR5-SYR/AR5_SYR (2).csv
 AR5_SYR.csv
 AR5_SYR_SPM.csv
 #AR5/AR5-WG1
 #AR5/AR5-WG1/AR5-WG1 (2).csv
-AR5-WG1.csv
-AR5-WG1-TS.csv
+#AR5-WG1.csv
+#AR5-WG1-TS.csv
+AR5WG1_RAP.csv
+AR5WG1_SPM.csv
+AR5WG1_TS.csv
 #AR5/AR5-WG2
-AR5-WG2_nosubchapt.csv
+#AR5-WG2_nosubchapt.csv
+AR5WG2_RAP.csv
 AR5_WG2_SPM.csv
-AR5-WG2_subchapt.csv
+#AR5-WG2_subchapt.csv
 AR5_WG2_TS.csv
 #AR5/AR5-WG3
 AR5-WG3.csv
+AR5_WG3_SPM.csv
 AR5WG3_TS.csv
