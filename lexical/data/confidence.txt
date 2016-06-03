@@ -1,0 +1,6 @@
+confidence
+confident
+very low confidence
+low confidence
+medium confidence
+high confidence
