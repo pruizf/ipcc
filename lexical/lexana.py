@@ -53,31 +53,17 @@ def tag_vocab_file(vbs, cfg, ffn):
                     # multi-token term
                     if " " in stg:
                         if re.search(rg, dsent):
-                            # count for lemma
-                            lemtags.setdefault(stg, {"count": 0})
-                            lemtags[stg]["count"] += 1
-                            # count for the lex type
-                            typetags.setdefault(vb, {"count": 0})
-                            typetags[vb]["count"] += 1
-                            # sentences for lemma
-                            sents4term.setdefault(stg, {sfn: []})
-                            if dsent not in sents4term[stg][sfn]:
-                                sents4term[stg][sfn].append(dsent)
+                            update_counts(lemtags, stg)
+                            update_counts(typetags, vb)
+                            update_counts(sents4term, vb, ke2=sfn, sent=dsent)
                     # single-token term
                     if re.match(rg, lemma):
                         if ((vbinfos["tag"] is None) or
                                 (vbinfos["tag"] is not None and
                                     re.match(vbinfos["tag"], pos))):
-                            # count for lemma
-                            lemtags.setdefault(stg, {"count": 0})
-                            lemtags[stg]["count"] += 1
-                            # count for the lex type
-                            typetags.setdefault(vb, {"count": 0})
-                            typetags[vb]["count"] += 1
-                            # sentences for lemma
-                            sents4term.setdefault(stg, {sfn: []})
-                            if dsent not in sents4term[stg][sfn]:
-                                sents4term[stg][sfn].append(dsent)
+                            update_counts(lemtags, stg)
+                            update_counts(typetags, vb)
+                            update_counts(sents4term, vb, ke2=sfn, sent=dsent)
         if idx and not idx % 100:
             print "    - Done {} of {} sentences, {}".format(
                 idx, len(sents), time.strftime("%H:%M:%S", time.localtime()))
@@ -91,8 +77,12 @@ def tag_vocab_file(vbs, cfg, ffn):
 def update_counts(di, ke1, ke2=None, sent=None):
     """
     Update counts dictionary (or sentence dictionary if ke2 is given)
+    @param di: dictionary to update
+    @param ke1: key to update on (a lemma or a tag (type))
+    for lemma and type counts
+    @param ke2: key (filename) to update on for term-to-sentence dict
+    @param sent: sentence for term-to-sentence dict
     """
-    #TODO: test this after running the above version
     if ke2 is None:
         di.setdefault(ke1, {"count": 0})
         di[ke1]["count"] += 1
@@ -113,7 +103,7 @@ def write_fn2item(di, vcb, cfg, idir, ofn=None):
     @ofn: full file path to output file
     """
     if ofn is None:
-        ofn = idir + "_fn2term_lexana.tsv"
+        ofn = idir + "_fn2term_lexana3.tsv"
     # filename order
     forder = ut.find_filename_sort_order(cfg)
     # tag order
@@ -177,7 +167,7 @@ def main(cfg, indir, ofn=None):
 
 
 if __name__ == "__main__":
-    #main(cf, cf.ttgpath, ")
+    #main(cf, cf.ttgpath)
     vocab = ut.load_vocabs(cf)
     lcs, tcs, scs = tag_vocab_dir(vocab, cf, cf.ttgpath)
     #outfn = cf.ttgpath + "_{}_lexana.tsv".format("fn2term")
