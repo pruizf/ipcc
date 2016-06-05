@@ -71,34 +71,7 @@ def tag_vocab_file(vbs, cfg, ffn):
                 idx, len(sents), time.strftime("%H:%M:%S", time.localtime()))
     # post-process counts for terms contained in other terms
     dupdi = ut.load_dups(cfg)
-    for sub, superlist in dupdi.items():
-        for supert in superlist:
-            # if supert in lemtags and lemtags[supert]["count"] == 0:
-            #     continue
-            try:
-                oldcount = lemtags[sub]["count"]
-                lemtags[sub]["count"] -= lemtags[supert]["count"]
-                print "{}- Updating count for [{} ({})] from {} to {}".format(
-                    " " * 8, sub, supert, oldcount, lemtags[sub]["count"])
-            except KeyError:
-                print "{}- Key [{}|{}] not in file [{}]".format(
-                    " " * 8, sub, supert, sfn)
-                pass
-            # if (it2type[supert]["type"] in typetags and
-            #         typetags[it2type[supert]["type"]]["count"] == 0):
-            #     continue
-            try:
-                oldtagcount = typetags[it2type[sub]["type"]]["count"]
-                typetags[it2type[sub]["type"]]["count"] -= lemtags[supert]["count"]
-                print "{}- Updating TAG count for [{}] from {} to {}".format(
-                    " " * 8, it2type[sub]["type"], oldtagcount,
-                    typetags[it2type[sub]["type"]]["count"])
-            except KeyError:
-                print "{}- Key [{}|{}] not in file [{}]".format(" " * 8,
-                    it2type[sub]["type"],
-                    it2type[supert]["type"],
-                    sfn)
-                pass
+    ut.dedup_counts(sfn, lemtags, typetags, dupdi, it2type)
     # update dicts with percentages
     for lem, ct in lemtags.items():
         total4type = typetags[it2type[lem]["type"]]["count"]
@@ -135,7 +108,7 @@ def write_fn2item(di, vcb, cfg, idir, ofn=None):
     @ofn: full file path to output file
     """
     if ofn is None:
-        ofn = idir + "_fn2term_lexana12.tsv"
+        ofn = idir + "_fn2term_lexana13.tsv"
     # filename order
     forder = ut.find_filename_sort_order(cfg)
     # tag order

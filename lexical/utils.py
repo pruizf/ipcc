@@ -90,14 +90,40 @@ def lxitem2type(vcb):
     return it2type
 
 
-def dedup_counts(di, dupdi):
+def dedup_counts(fn, lemdi, typedi, dupdi, item2type):
     """
     Given a dictionary with counts and a config of potential duplicate counts,
     remove the duplicates.
     E.g. subtract counts for "very confident" from counts for "confident"
+    @param fn: filename for file we're working on
+    @param lemdi: dict with lemma counts
+    @param typedi: dict with lexical type counts
+    @param dupdi: dictionary substring-to-superstring
+    @param item2type: dict giving lex type and other infos for each lemma
+    in the vocabulary, created with L{lxitem2type} above.
     """
-    pass
-    #TODO
+    for sub, superlist in dupdi.items():
+        for supert in superlist:
+            try:
+                oldcount = lemdi[sub]["count"]
+                lemdi[sub]["count"] -= lemdi[supert]["count"]
+                print "{}- Updating count for [{} ({})] from {} to {}".format(
+                    " " * 8, sub, supert, oldcount, lemdi[sub]["count"])
+            except KeyError:
+                print "{}- Key [{}|{}] not in file [{}]".format(
+                    " " * 8, sub, supert, fn)
+                pass
+            try:
+                oldtagcount = typedi[item2type[sub]["type"]]["count"]
+                typedi[item2type[sub]["type"]]["count"] -= lemdi[supert]["count"]
+                print "{}- Updating TAG count for [{}] from {} to {}".format(
+                    " " * 8, item2type[sub]["type"], oldtagcount,
+                    typedi[item2type[sub]["type"]]["count"])
+            except KeyError:
+                print "{}- Key [{}|{}] not in file [{}]".format(
+                    " " * 8, item2type[sub]["type"], item2type[supert]["type"],
+                    fn)
+                pass
 
 
 def find_filename_sort_order(cfg):
