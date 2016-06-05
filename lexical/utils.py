@@ -124,6 +124,74 @@ def dedup_counts(fn, lemdi, typedi, dupdi, item2type):
                 pass
 
 
+def tag_term_in_sent(rg, sent, must_change=True):
+    """
+    Mark regex 'rg' match in text 'sent'
+    @param rg: the regex object
+    @param sent: sentence text
+    @param must_change: noticed that in some cases there is no match,
+    so added this flag
+    """
+    newsent = re.sub(rg, r"***\1***", sent)
+    if must_change:
+        assert newsent != sent
+    return newsent
+
+
+def dedup_sentence_dict(sents4term, dupdi):
+    """
+    Remove sentences from the values for a term if they are also matches for
+    a superstring of that term.
+    @sents4term: original hash {term: {fn: [sents]}}
+    @dupdi: dict with substring-to-superstring info
+    """
+    nsents4term = {}
+    for term, infos in sents4term.items():
+        termrg = re.compile(ur"(?:^|\b)({})(?:\b|$)".format(term), re.U | re.I)
+        nsents4term.setdefault(term, {})
+        # highlight terms that are no substrings of larger terms
+        if term not in dupdi:
+            for fn, sents in infos.items():
+                nsents4term[term].setdefault(fn, [])
+                for sent in sents:
+                    nsents4term[term][fn].append(
+                        tag_term_in_sent(termrg, sent, must_change=False))
+        # highlight for terms that have a superstring in the vocab
+        else:
+            for fn, sents in infos.items():
+                nsents4term[term].setdefault(fn, [])
+                for sent in sents:
+                    start, end = (re.search(termrg, sent).start(),
+                                  re.search(termrg, sent).end())
+                    assert start is not None
+                    assert end is not None
+                    # assign sentence to superstring-term if match, else to substr
+                    no_supert_match = True
+                    for supert in dupdi[term]:
+                        nsents4term.setdefault(supert, {})
+                        nsents4term[supert].setdefault(fn, [])
+                        supertrg = re.compile(ur"(?:^|\b)({})(?:\b|$)".format(
+                            supert), re.U | re.I)
+                        if re.search(supertrg, sent):
+                            no_supert_match = False
+                            sstart, send = \
+                                (re.search(supertrg, sent).start(),
+                                 re.search(supertrg, sent).end())
+                            if sstart <= start and end <= send:
+                                if sent not in nsents4term[supert][fn]:
+                                    nsents4term[supert][fn].append(
+                                        tag_term_in_sent(supertrg, sent))
+                            else:
+                                if sent not in nsents4term[term][fn]:
+                                    nsents4term[term][fn].append(
+                                        tag_term_in_sent(termrg, sent))
+                    if no_supert_match:
+                        if sent not in nsents4term[term][fn]:
+                            nsents4term[term][fn].append(
+                                tag_term_in_sent(termrg, sent))
+    return nsents4term
+
+
 def find_filename_sort_order(cfg):
     """Return the filename-order for output"""
     return ([ll.strip() for ll in

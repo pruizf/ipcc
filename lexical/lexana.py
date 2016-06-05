@@ -77,65 +77,8 @@ def tag_vocab_file(vbs, cfg, ffn):
         total4type = typetags[it2type[lem]["type"]]["count"]
         lemtags[lem].update({"percent": 100 * float(ct["count"]) / total4type})
     # remove sentence matches for a term if a superstring also matches
-    nsents4term = {}
-    for term, infos in sents4term.items():
-        termrg = re.compile(ur"(?:^|\b)({})(?:\b|$)".format(term), re.U | re.I)
-        nsents4term.setdefault(term, {})
-        # highlight terms that are no substrings of larger terms
-        if term not in dupdi:
-            for fn, sents in infos.items():
-                nsents4term[term].setdefault(fn, [])
-                for sent in sents:
-                    nsents4term[term][fn].append(
-                        tag_term_in_sent(termrg, sent, must_change=False))
-        # highlight for terms that have a superstring in the vocab
-        else:
-            for fn, sents in infos.items():
-                nsents4term[term].setdefault(fn, [])
-                for sent in sents:
-                    start, end = (re.search(termrg, sent).start(),
-                                  re.search(termrg, sent).end())
-                    assert start is not None
-                    assert end is not None
-                    # assign sentence to superstring-term if match, else to substr
-                    no_supert_match = True
-                    for supert in dupdi[term]:
-                        nsents4term.setdefault(supert, {})
-                        nsents4term[supert].setdefault(fn, [])
-                        supertrg = re.compile(ur"(?:^|\b)({})(?:\b|$)".format(
-                            supert), re.U | re.I)
-                        if re.search(supertrg, sent):
-                            no_supert_match = False
-                            sstart, send = \
-                                (re.search(supertrg, sent).start(),
-                                 re.search(supertrg, sent).end())
-                            if sstart <= start and end <= send:
-                                if sent not in nsents4term[supert][fn]:
-                                    nsents4term[supert][fn].append(
-                                        tag_term_in_sent(supertrg, sent))
-                            else:
-                                if sent not in nsents4term[term][fn]:
-                                    nsents4term[term][fn].append(
-                                        tag_term_in_sent(termrg, sent))
-                    if no_supert_match:
-                        if sent not in nsents4term[term][fn]:
-                            nsents4term[term][fn].append(
-                                tag_term_in_sent(termrg, sent))
+    nsents4term = ut.dedup_sentence_dict(sents4term, dupdi)
     return lemtags, typetags, sents4term, nsents4term
-
-
-def tag_term_in_sent(rg, sent, must_change=True):
-    """
-    Mark regex 'rg' match in text 'sent'
-    @param rg: the regex object
-    @param sent: sentence text
-    @param must_change: noticed that in some cases there is no match,
-    so added this flag
-    """
-    newsent = re.sub(rg, r"***\1***", sent)
-    if must_change:
-        assert newsent != sent
-    return newsent
 
 
 def update_counts(di, ke1, ke2=None, sent=None):
@@ -167,7 +110,7 @@ def write_fn2item(di, vcb, cfg, idir, ofn=None):
     @ofn: full file path to output file
     """
     if ofn is None:
-        ofn = idir + "_fn2term_lexana19.tsv"
+        ofn = idir + "_fn2term_lexana20.tsv"
     print "- Writing fn2item to [{}]".format(ofn)
     # filename order
     forder = ut.find_filename_sort_order(cfg)
@@ -203,7 +146,7 @@ def write_sentences(sdi, vcb, cfg, idir, ofn=None):
     @param ofn: filename for output
     """
     if ofn is None:
-        ofn = idir + "_sents_lexana19.tsv"
+        ofn = idir + "_sents_lexana20.tsv"
     print "- Writing item2sentence to [{}]".format(ofn)
     # figure out order for write-out
     # tagtype for each vocab item
