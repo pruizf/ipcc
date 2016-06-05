@@ -166,6 +166,7 @@ def write_sentences(sdi, vcb, cfg, idir, ofn=None):
             for sen in infos:
                 ols.append(u"{}\t{}\t{}\n".format(ke, fn, sen))
     with codecs.open(ofn, "w", "utf8") as fd:
+        fd.write("term\tfilename\tsentence\n")
         fd.write("".join(ols))
 
 
@@ -218,7 +219,7 @@ def main(cfg, indir, ofn=None):
 
 
 if __name__ == "__main__":
-    SUFFIX = 23
+    SUFFIX = 24
     main(cf, cf.ttgpath)
     # vocab = ut.load_vocabs(cf)
     # lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)
