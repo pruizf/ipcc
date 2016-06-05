@@ -64,6 +64,19 @@ def load_vocabs(cfg):
     return vd
 
 
+def load_dups(cfg):
+    """
+    Load config for terms that are a substring (as full word) of other terms
+    """
+    dupdi = {}
+    with codecs.open(cfg.dupterms, "r", "utf8") as fd:
+        for line in [ll.strip() for ll in fd.readlines()
+                     if not ll.startswith("#")]:
+            sl = line.split("\t")
+            dupdi[sl[0]] = sl[1].split(";")
+    return dupdi
+
+
 def lxitem2type(vcb):
     """
     Return dict with type (formal or not) and tag for each
@@ -75,6 +88,16 @@ def lxitem2type(vcb):
             # take index 0, cos index 1 is a regex
             it2type[it[0]] = {"type": skey, "longtype": infos["vname"]}
     return it2type
+
+
+def dedup_counts(di, dupdi):
+    """
+    Given a dictionary with counts and a config of potential duplicate counts,
+    remove the duplicates.
+    E.g. subtract counts for "very confident" from counts for "confident"
+    """
+    pass
+    #TODO
 
 
 def find_filename_sort_order(cfg):

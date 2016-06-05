@@ -1,0 +1,4 @@
+#substring	is_substring_of
+likely	very likely;about as likely as not
+unlikely	very unlikely;exceptionally unlikely
+confidence	very low confidence;low confidence;medium confidence;high confidence;very high confidence

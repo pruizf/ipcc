@@ -46,3 +46,6 @@ for ke in datakeys:
 # apply vocab lists in this order
 vocorder = ["LKL", "CNF", "EVI", "AGR", "MDL", "LXV", "ADV", "ADJ", "PRP", "PHR"]
 assert (set(vocorder)) == set(datakeys)
+
+# terms that are a substring of other terms (as full words)
+dupterms = os.path.join(datapath, "substring_terms.txt")
