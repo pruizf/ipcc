@@ -42,28 +42,30 @@ def tag_vocab_file(vbs, cfg, ffn):
     svb = sorted(vbs, key=lambda di: cfg.vocorder.index(di))
     sents = ut.detokenize_ttg_sentences(ffn)
     print "  - Total sentences: {}".format(len(sents))
+    # iterate over sentences
     for idx, sent in enumerate(sents):
         dsent = " ".join([wf[0] for wf in sent])
-        for wf, pos, lemma in sent:
-            for vb in svb:
-                vbinfos = vbs[vb]
-                for stg, rg in vbinfos["items"]:
-                    #TODO: fix this cos need to search this ONCE
-                    #TODO: PER SENTENCE not like now, for every word
-                    # multi-token term
-                    if " " in stg:
-                        if re.search(rg, dsent):
-                            update_counts(lemtags, stg)
-                            update_counts(typetags, vb)
-                            update_counts(sents4term, vb, ke2=sfn, sent=dsent)
-                    # single-token term
-                    if re.match(rg, lemma):
-                        if ((vbinfos["tag"] is None) or
-                                (vbinfos["tag"] is not None and
-                                    re.match(vbinfos["tag"], pos))):
-                            update_counts(lemtags, stg)
-                            update_counts(typetags, vb)
-                            update_counts(sents4term, vb, ke2=sfn, sent=dsent)
+        # iterate over vocab terms
+        for vb in svb:
+            vbinfos = vbs[vb]
+            for stg, rg in vbinfos["items"]:
+                # search multi-token terms against sentence
+                if " " in stg:
+                    if re.search(rg, dsent):
+                        update_counts(lemtags, stg)
+                        update_counts(typetags, vb)
+                        update_counts(sents4term, vb, ke2=sfn, sent=dsent)
+                # match single-token terms against each lemma (check pos too)
+                else:
+                    for wf, pos, lemma in sent:
+                        if re.match(rg, lemma):
+                            if ((vbinfos["tag"] is None) or
+                                    (vbinfos["tag"] is not None and
+                                        re.match(vbinfos["tag"], pos))):
+                                update_counts(lemtags, stg)
+                                update_counts(typetags, vb)
+                                update_counts(sents4term, vb, ke2=sfn,
+                                              sent=dsent)
         if idx and not idx % 100:
             print "    - Done {} of {} sentences, {}".format(
                 idx, len(sents), time.strftime("%H:%M:%S", time.localtime()))
