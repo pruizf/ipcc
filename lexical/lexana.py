@@ -76,6 +76,9 @@ def tag_vocab_file(vbs, cfg, ffn):
     for lem, ct in lemtags.items():
         total4type = typetags[it2type[lem]["type"]]["count"]
         lemtags[lem].update({"percent": 100 * float(ct["count"]) / total4type})
+    for ttag, ct in typetags.items():
+        lemtags[u"#{}_total".format(ttag)] = {"percent": 100,
+                                              "count": ct["count"]}
     # remove sentence matches for a term if a superstring also matches
     nsents4term = ut.dedup_sentence_dict(sents4term, dupdi)
     return lemtags, typetags, sents4term, nsents4term
@@ -219,7 +222,7 @@ def main(cfg, indir, ofn=None):
 
 
 if __name__ == "__main__":
-    SUFFIX = 26
+    SUFFIX = 28
     main(cf, cf.ttgpath)
     # vocab = ut.load_vocabs(cf)
     # lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)

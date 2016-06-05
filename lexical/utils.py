@@ -75,6 +75,7 @@ def lxitem2type(vcb):
         for it in infos["items"]:
             # take index 0, cos index 1 is a regex
             it2type[it[0]] = {"type": skey, "longtype": infos["vname"]}
+        it2type[u"#{}_total".format(skey)] = {"type": skey, "longtype": skey}
     return it2type
 
 
