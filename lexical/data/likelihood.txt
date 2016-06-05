@@ -5,4 +5,4 @@ about as likely as not
 unlikely
 very unlikely
 exceptionally unlikely
-% probability
+(?<=% )probability
