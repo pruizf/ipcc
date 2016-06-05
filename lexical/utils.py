@@ -54,7 +54,7 @@ def load_vocabs(cfg):
         ffn = os.path.join(cfg.datapath, infos["fn"])
         with codecs.open(ffn, "r", "utf8") as fd:
             its = [it.strip() for it in fd.readlines()]
-        itrgs = [re.compile(ur"\b{}\b".format(it), re.U|re.I)
+        itrgs = [re.compile(ur"(?:^|\b){}(?:\b|$)".format(it), re.U|re.I)
                  for it in its]
         vd[vocab] = {"ltype": infos["ltype"], "tag": infos["tag"],
                      "vname": infos["fn"].replace(".txt", ""),

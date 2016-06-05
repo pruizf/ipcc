@@ -54,7 +54,7 @@ def tag_vocab_file(vbs, cfg, ffn):
                     if re.search(rg, dsent):
                         update_counts(lemtags, stg)
                         update_counts(typetags, vb)
-                        update_counts(sents4term, vb, ke2=sfn, sent=dsent)
+                        update_counts(sents4term, stg, ke2=sfn, sent=dsent)
                 # match single-token terms against each lemma (check pos too)
                 else:
                     for wf, pos, lemma in sent:
@@ -64,7 +64,7 @@ def tag_vocab_file(vbs, cfg, ffn):
                                         re.match(vbinfos["tag"], pos))):
                                 update_counts(lemtags, stg)
                                 update_counts(typetags, vb)
-                                update_counts(sents4term, vb, ke2=sfn,
+                                update_counts(sents4term, stg, ke2=sfn,
                                               sent=dsent)
         if idx and not idx % 100:
             print "    - Done {} of {} sentences, {}".format(
@@ -76,7 +76,66 @@ def tag_vocab_file(vbs, cfg, ffn):
     for lem, ct in lemtags.items():
         total4type = typetags[it2type[lem]["type"]]["count"]
         lemtags[lem].update({"percent": 100 * float(ct["count"]) / total4type})
-    return lemtags, typetags, sents4term
+    # remove sentence matches for a term if a superstring also matches
+    nsents4term = {}
+    for term, infos in sents4term.items():
+        termrg = re.compile(ur"(?:^|\b)({})(?:\b|$)".format(term), re.U | re.I)
+        nsents4term.setdefault(term, {})
+        # highlight terms that are no substrings of larger terms
+        if term not in dupdi:
+            for fn, sents in infos.items():
+                nsents4term[term].setdefault(fn, [])
+                for sent in sents:
+                    nsents4term[term][fn].append(
+                        tag_term_in_sent(termrg, sent, must_change=False))
+        # highlight for terms that have a superstring in the vocab
+        else:
+            for fn, sents in infos.items():
+                nsents4term[term].setdefault(fn, [])
+                for sent in sents:
+                    start, end = (re.search(termrg, sent).start(),
+                                  re.search(termrg, sent).end())
+                    assert start is not None
+                    assert end is not None
+                    # assign sentence to superstring-term if match, else to substr
+                    no_supert_match = True
+                    for supert in dupdi[term]:
+                        nsents4term.setdefault(supert, {})
+                        nsents4term[supert].setdefault(fn, [])
+                        supertrg = re.compile(ur"(?:^|\b)({})(?:\b|$)".format(
+                            supert), re.U | re.I)
+                        if re.search(supertrg, sent):
+                            no_supert_match = False
+                            sstart, send = \
+                                (re.search(supertrg, sent).start(),
+                                 re.search(supertrg, sent).end())
+                            if sstart <= start and end <= send:
+                                if sent not in nsents4term[supert][fn]:
+                                    nsents4term[supert][fn].append(
+                                        tag_term_in_sent(supertrg, sent))
+                            else:
+                                if sent not in nsents4term[term][fn]:
+                                    nsents4term[term][fn].append(
+                                        tag_term_in_sent(termrg, sent))
+                    if no_supert_match:
+                        if sent not in nsents4term[term][fn]:
+                            nsents4term[term][fn].append(
+                                tag_term_in_sent(termrg, sent))
+    return lemtags, typetags, sents4term, nsents4term
+
+
+def tag_term_in_sent(rg, sent, must_change=True):
+    """
+    Mark regex 'rg' match in text 'sent'
+    @param rg: the regex object
+    @param sent: sentence text
+    @param must_change: noticed that in some cases there is no match,
+    so added this flag
+    """
+    newsent = re.sub(rg, r"***\1***", sent)
+    if must_change:
+        assert newsent != sent
+    return newsent
 
 
 def update_counts(di, ke1, ke2=None, sent=None):
@@ -96,7 +155,7 @@ def update_counts(di, ke1, ke2=None, sent=None):
         di.setdefault(ke1, {ke2: []})
         if sent not in di[ke1][ke2]:
             di[ke1][ke2].append(sent)
-    return di
+    #return di
 
 
 def write_fn2item(di, vcb, cfg, idir, ofn=None):
@@ -108,7 +167,8 @@ def write_fn2item(di, vcb, cfg, idir, ofn=None):
     @ofn: full file path to output file
     """
     if ofn is None:
-        ofn = idir + "_fn2term_lexana13.tsv"
+        ofn = idir + "_fn2term_lexana19.tsv"
+    print "- Writing fn2item to [{}]".format(ofn)
     # filename order
     forder = ut.find_filename_sort_order(cfg)
     # tag order
@@ -134,6 +194,38 @@ def write_fn2item(di, vcb, cfg, idir, ofn=None):
             ofd.write("\t".join([unicode(it) for it in outlist]) + "\n")
 
 
+def write_sentences(sdi, vcb, cfg, idir, ofn=None):
+    """
+    @param sdi: Dict of {key: {fn1: [sents], ...fnn: [sents]}}
+    @param vcb: domain vocab
+    @param cfg: config
+    @param idir: directory with ttg results
+    @param ofn: filename for output
+    """
+    if ofn is None:
+        ofn = idir + "_sents_lexana19.tsv"
+    print "- Writing item2sentence to [{}]".format(ofn)
+    # figure out order for write-out
+    # tagtype for each vocab item
+    it2type = ut.lxitem2type(vcb)
+    # filename order
+    forder = ut.find_filename_sort_order(cfg)
+    # tag order
+    tagorder = sorted(vcb, key=lambda vn: cfg.vocorder.index(vn))
+    # final order
+    sorter = sorted(it2type, key=lambda item: (tagorder.index(
+        it2type[item]["type"]), item))
+    myorder = sorted(sdi, key=lambda ke: sorter.index(ke))
+    ols = []
+    for ke, perfile in sorted(sdi.items(),
+                              key=lambda its: myorder.index(its[0])):
+        for fn, infos in sorted(perfile.items()):
+            for sen in infos:
+                ols.append(u"{}\t{}\t{}\n".format(ke, fn, sen))
+    with codecs.open(ofn, "w", "utf8") as fd:
+        fd.write("".join(ols))
+
+
 def tag_vocab_dir(vbs, cfg, idir):
     """
     Run L{tag_vocab_file} for each file on a dir and aggregate
@@ -143,37 +235,49 @@ def tag_vocab_dir(vbs, cfg, idir):
     lemtags = {}
     typetags = {}
     sents4term = {}
+    nsents4term = {}
     for idx, fn in enumerate(sorted(os.listdir(idir))):
         if "SPM" not in fn:
             print "- Skip [{}]".format(fn)
             continue
         ffn = os.path.join(idir, fn)
-        # lemma counts, type counts, sentences
-        flc, ftc, fs = tag_vocab_file(vbs, cfg, ffn)
+        # lemma counts, type counts, sentences, dedup sentences
+        flc, ftc, fs, fns = tag_vocab_file(vbs, cfg, ffn)
         if idx == 50:  # debug
             break
         # check that won't overwrite
         assert fn not in lemtags
         assert fn not in typetags
-        assert fn not in sents4term
-        # update
+        # update lemma counts and type counts
         lemtags.update({fn: flc})
         typetags.update({fn: ftc})
-        sents4term.update({fn: fs})
+        # update sentence dict
+        for ke, val in fs.items():
+            sents4term.setdefault(ke, {})
+            assert len(val.keys()) == 1
+            assert val.keys()[0] not in sents4term[ke]
+            sents4term[ke].update(val)
+        for ke, val in fns.items():
+            nsents4term.setdefault(ke, {})
+            assert len(val.keys()) == 1
+            assert val.keys()[0] not in nsents4term[ke]
+            nsents4term[ke].update(val)
     print "Done {} files".format(idx + 1)
-    return lemtags, typetags, sents4term
+    return lemtags, typetags, sents4term, nsents4term
 
 
 def main(cfg, indir, ofn=None):
     """Run"""
     vocab = ut.load_vocabs(cfg)
-    lcs, tcs, scs = tag_vocab_dir(vocab, cfg, indir)
+    lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cfg, indir)
     write_fn2item(lcs, vocab, cfg, indir, ofn)
+    write_sentences(nscs, vocab, cfg, indir, ofn)
 
 
 if __name__ == "__main__":
     #main(cf, cf.ttgpath)
     vocab = ut.load_vocabs(cf)
-    lcs, tcs, scs = tag_vocab_dir(vocab, cf, cf.ttgpath)
+    lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)
     #outfn = cf.ttgpath + "_{}_lexana.tsv".format("fn2term")
     write_fn2item(lcs, vocab, cf, cf.ttgpath)
+    write_sentences(nscs, vocab, cf, cf.ttgpath)
