@@ -110,7 +110,7 @@ def write_fn2item(di, vcb, cfg, idir, ofn=None):
     @ofn: full file path to output file
     """
     if ofn is None:
-        ofn = idir + "_fn2term_lexana20.tsv"
+        ofn = idir + "_fn2term_lexana_{}.tsv".format(SUFFIX)
     print "- Writing fn2item to [{}]".format(ofn)
     # filename order
     forder = ut.find_filename_sort_order(cfg)
@@ -146,7 +146,7 @@ def write_sentences(sdi, vcb, cfg, idir, ofn=None):
     @param ofn: filename for output
     """
     if ofn is None:
-        ofn = idir + "_sents_lexana20.tsv"
+        ofn = idir + "_sents_lexana_{}.tsv".format(SUFFIX)
     print "- Writing item2sentence to [{}]".format(ofn)
     # figure out order for write-out
     # tagtype for each vocab item
@@ -218,9 +218,10 @@ def main(cfg, indir, ofn=None):
 
 
 if __name__ == "__main__":
-    #main(cf, cf.ttgpath)
-    vocab = ut.load_vocabs(cf)
-    lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)
-    #outfn = cf.ttgpath + "_{}_lexana.tsv".format("fn2term")
-    write_fn2item(lcs, vocab, cf, cf.ttgpath)
-    write_sentences(nscs, vocab, cf, cf.ttgpath)
+    SUFFIX = 21
+    main(cf, cf.ttgpath)
+    # vocab = ut.load_vocabs(cf)
+    # lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)
+    # #outfn = cf.ttgpath + "_{}_lexana.tsv".format("fn2term")
+    # write_fn2item(lcs, vocab, cf, cf.ttgpath)
+    # write_sentences(nscs, vocab, cf, cf.ttgpath)
