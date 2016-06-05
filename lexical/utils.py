@@ -154,8 +154,9 @@ def dedup_sentence_dict(sents4term, dupdi):
             for fn, sents in infos.items():
                 nsents4term[term].setdefault(fn, [])
                 for sent in sents:
-                    nsents4term[term][fn].append(
-                        tag_term_in_sent(termrg, sent, must_change=False))
+                    fmtsent = tag_term_in_sent(termrg, sent, must_change=False)
+                    if fmtsent not in nsents4term[term][fn]:
+                        nsents4term[term][fn].append(fmtsent)
         # highlight for terms that have a superstring in the vocab
         else:
             for fn, sents in infos.items():
@@ -178,17 +179,17 @@ def dedup_sentence_dict(sents4term, dupdi):
                                 (re.search(supertrg, sent).start(),
                                  re.search(supertrg, sent).end())
                             if sstart <= start and end <= send:
-                                if sent not in nsents4term[supert][fn]:
-                                    nsents4term[supert][fn].append(
-                                        tag_term_in_sent(supertrg, sent))
+                                fmtsent = tag_term_in_sent(supertrg, sent)
+                                if fmtsent not in nsents4term[supert][fn]:
+                                    nsents4term[supert][fn].append(fmtsent)
                             else:
-                                if sent not in nsents4term[term][fn]:
-                                    nsents4term[term][fn].append(
-                                        tag_term_in_sent(termrg, sent))
+                                fmtsent = tag_term_in_sent(termrg, sent)
+                                if fmtsent not in nsents4term[term][fn]:
+                                    nsents4term[term][fn].append(fmtsent)
                     if no_supert_match:
-                        if sent not in nsents4term[term][fn]:
-                            nsents4term[term][fn].append(
-                                tag_term_in_sent(termrg, sent))
+                        fmtsent = tag_term_in_sent(termrg, sent)
+                        if fmtsent not in nsents4term[term][fn]:
+                            nsents4term[term][fn].append(fmtsent)
     return nsents4term
 
 
