@@ -36,8 +36,8 @@ def tag_vocab_file(vbs, cfg, ffn):
     print "- File [{}], {}".format(sfn, time.strftime(
         "%H:%M:%S", time.localtime()))
     it2type = ut.lxitem2type(vbs)
-    lemtags = {}
-    typetags = {}
+    lemtags = {}  # counts for lemmas
+    typetags = {}  # counts for types
     sents4term = {}
     svb = sorted(vbs, key=lambda di: cfg.vocorder.index(di))
     sents = ut.detokenize_ttg_sentences(ffn)
@@ -52,8 +52,12 @@ def tag_vocab_file(vbs, cfg, ffn):
                 # search multi-token terms against sentence
                 if " " in stg:
                     if re.search(rg, dsent):
-                        update_counts(lemtags, stg)
-                        update_counts(typetags, vb)
+                        if stg == "very unlikely" and sfn == "AR4_SYR_SPM.csv":
+                            import pdb;pdb.set_trace()
+                        update_counts(lemtags, stg,
+                                      amount=len(re.findall(rg, dsent)))
+                        update_counts(typetags, vb,
+                                      amount=len(re.findall(rg, dsent)))
                         update_counts(sents4term, stg, ke2=sfn, sent=dsent)
                 # match single-token terms against each lemma (check pos too)
                 else:
@@ -84,7 +88,7 @@ def tag_vocab_file(vbs, cfg, ffn):
     return lemtags, typetags, sents4term, nsents4term
 
 
-def update_counts(di, ke1, ke2=None, sent=None):
+def update_counts(di, ke1, amount=1, ke2=None, sent=None):
     """
     Update counts dictionary (or sentence dictionary if ke2 is given)
     @param di: dictionary to update
@@ -95,7 +99,7 @@ def update_counts(di, ke1, ke2=None, sent=None):
     """
     if ke2 is None:
         di.setdefault(ke1, {"count": 0})
-        di[ke1]["count"] += 1
+        di[ke1]["count"] += amount
     else:
         assert sent is not None
         di.setdefault(ke1, {ke2: []})
@@ -179,8 +183,8 @@ def tag_vocab_dir(vbs, cfg, idir):
     results over the directory
     @return: dict with aggregated results
     """
-    lemtags = {}
-    typetags = {}
+    lemtags = {}  # counts for lemmas
+    typetags = {}  # counts for types
     sents4term = {}
     nsents4term = {}
     for idx, fn in enumerate(sorted(os.listdir(idir))):
@@ -222,7 +226,7 @@ def main(cfg, indir, ofn=None):
 
 
 if __name__ == "__main__":
-    SUFFIX = 28
+    SUFFIX = 30
     main(cf, cf.ttgpath)
     # vocab = ut.load_vocabs(cf)
     # lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)
