@@ -45,6 +45,11 @@ def tag_vocab_file(vbs, cfg, ffn):
     # iterate over sentences
     for idx, sent in enumerate(sents):
         dsent = " ".join([wf[0] for wf in sent])
+        if re.search(r" {2,}", dsent):
+            print "!!!!two spaces"
+            import pdb;pdb.set_trace()
+        if "Increased degradation of coastal fisheries" in dsent:
+            import pdb;pdb.set_trace()
         # iterate over vocab terms
         for vb in svb:
             vbinfos = vbs[vb]
@@ -226,7 +231,7 @@ def main(cfg, indir, ofn=None):
 
 
 if __name__ == "__main__":
-    SUFFIX = 30
+    SUFFIX = 36
     main(cf, cf.ttgpath)
     # vocab = ut.load_vocabs(cf)
     # lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)
