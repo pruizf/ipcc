@@ -45,11 +45,6 @@ def tag_vocab_file(vbs, cfg, ffn):
     # iterate over sentences
     for idx, sent in enumerate(sents):
         dsent = " ".join([wf[0] for wf in sent])
-        if re.search(r" {2,}", dsent):
-            print "!!!!two spaces"
-            import pdb;pdb.set_trace()
-        if "Increased degradation of coastal fisheries" in dsent:
-            import pdb;pdb.set_trace()
         # iterate over vocab terms
         for vb in svb:
             vbinfos = vbs[vb]
@@ -57,8 +52,6 @@ def tag_vocab_file(vbs, cfg, ffn):
                 # search multi-token terms against sentence
                 if " " in stg:
                     if re.search(rg, dsent):
-                        if stg == "very unlikely" and sfn == "AR4_SYR_SPM.csv":
-                            import pdb;pdb.set_trace()
                         update_counts(lemtags, stg,
                                       amount=len(re.findall(rg, dsent)))
                         update_counts(typetags, vb,
