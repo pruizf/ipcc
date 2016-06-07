@@ -140,7 +140,7 @@ def tag_term_in_sent(rg, sent, must_change=True):
     @param must_change: noticed that in some cases there is no match,
     so added this flag
     """
-    newsent = re.sub(rg, r"***\1***", sent)
+    newsent = re.sub(rg, r"^^^\1^^^", sent)
     if must_change:
         assert newsent != sent
     return newsent
