@@ -224,7 +224,7 @@ def main(cfg, indir, ofn=None):
 
 
 if __name__ == "__main__":
-    SUFFIX = 37
+    SUFFIX = 39
     main(cf, cf.ttgpath)
     # vocab = ut.load_vocabs(cf)
     # lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)

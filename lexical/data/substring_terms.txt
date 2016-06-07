@@ -1,6 +1,6 @@
-#substring	is_substring_of
-likely	very likely;about as likely as not
-unlikely	very unlikely;exceptionally unlikely
-confidence	very low confidence;low confidence;medium confidence;high confidence;very high confidence
-low confidence	very low confidence
-high confidence	very high confidence
+#order	substring	is_substring_of
+1	likely	very likely;about as likely as not
+2	unlikely	very unlikely;exceptionally unlikely
+3	low confidence	very low confidence
+4	high confidence	very high confidence
+5	confidence	very low confidence;low confidence;medium confidence;high confidence;very high confidence

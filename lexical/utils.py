@@ -90,7 +90,7 @@ def load_dups(cfg):
         for line in [ll.strip() for ll in fd.readlines()
                      if not ll.startswith("#")]:
             sl = line.split("\t")
-            dupdi[sl[0]] = sl[1].split(";")
+            dupdi[(sl[1], sl[0])] = sl[2].split(";")
     return dupdi
 
 
@@ -102,11 +102,13 @@ def dedup_counts(fn, lemdi, typedi, dupdi, item2type):
     @param fn: filename for file we're working on
     @param lemdi: dict with lemma counts
     @param typedi: dict with lexical type counts
-    @param dupdi: dictionary substring-to-superstring
+    @param dupdi: dictionary substring-to-superstring. dupdi keys are tuples,
+    with the substring at index 0, and the order of application at 1.
     @param item2type: dict giving lex type and other infos for each lemma
     in the vocabulary, created with L{lxitem2type} above.
     """
-    for sub, superlist in dupdi.items():
+    for suba, superlist in sorted(dupdi.items(), key=lambda it: it[0][1]):
+        sub = suba[0]
         for supert in superlist:
             try:
                 oldcount = lemdi[sub]["count"]
@@ -153,10 +155,15 @@ def dedup_sentence_dict(sents4term, dupdi):
     """
     nsents4term = {}
     for term, infos in sents4term.items():
+        # dupdi keys are tuples, with term at 0 and sort-order at 1
+        try:
+            ddkey = [ke for ke in dupdi if ke[0] == term][0]
+        except IndexError:
+            ddkey = None
         termrg = re.compile(ur"(?:^|\b)({})(?:\b|$)".format(term), re.U | re.I)
         nsents4term.setdefault(term, {})
         # highlight terms that are no substrings of larger terms
-        if term not in dupdi:
+        if ddkey is None:
             for fn, sents in infos.items():
                 nsents4term[term].setdefault(fn, [])
                 for sent in sents:
@@ -174,7 +181,7 @@ def dedup_sentence_dict(sents4term, dupdi):
                     assert end is not None
                     # assign sentence to superstring-term if match, else to substr
                     no_supert_match = True
-                    for supert in dupdi[term]:
+                    for supert in dupdi[ddkey]:
                         nsents4term.setdefault(supert, {})
                         nsents4term[supert].setdefault(fn, [])
                         supertrg = re.compile(ur"(?:^|\b)({})(?:\b|$)".format(
@@ -217,6 +224,8 @@ if __name__ == "__main__":
     infn2 = "/home/pablo/projects/clm/ipcc_norm_wk/results_06032016/CSV_06032016_ttg/AR5_WG2_SPM.csv"
     sts2 = detokenize_ttg_sentences(infn2)
     assert sts2[-1] == [(u'Increased', u'JJ', u'increased'), (u'degradation', u'NN', u'degradation'), (u'of', u'IN', u'of'), (u'coastal', u'JJ', u'coastal'), (u'fisheries', u'NNS', u'fishery'), (u'due', u'JJ', u'due'), (u'to', u'TO', u'to'), (u'direct', u'JJ', u'direct'), (u'effects', u'NNS', u'effect'), (u'and', u'CC', u'and'), (u'effects', u'NNS', u'effect'), (u'of', u'IN', u'of'), (u'increased', u'VBN', u'increase'), (u'coral', u'JJ', u'coral'), (u'reef', u'NN', u'reef'), (u'bleaching', u'VBG', u'bleach'), (u',', u',', u','), (u'beyond', u'IN', u'beyond'), (u'degradation', u'NN', u'degradation'), (u'due', u'JJ', u'due'), (u'to', u'TO', u'to'), (u'overfishing', u'NN', u'overfishing'), (u'and', u'CC', u'and'), (u'pollution', u'NN', u'pollution'), (u'(', u'(', u'('), (u'low', u'JJ', u'low'), (u'confidence', u'NN', u'confidence'), (u',', u',', u','), (u'minor', u'JJ', u'minor'), (u'contribution', u'NN', u'contribution'), (u'from', u'IN', u'from'), (u'climate', u'NN', u'climate'), (u'change', u'NN', u'change'), (u')', u')', u')'), (u'[', u'SYM', u'['), (u'18.3-4', u'CD', u'@card@'), (u',', u',', u','), (u'29.3', u'CD', u'@card@'), (u',', u',', u','), (u'30.6', u'CD', u'@card@'), (u',', u',', u','), (u'Table', u'NP', u'Table'), (u'18-9', u'CD', u'@card@'), (u',', u',', u','), (u'Box', u'NP', u'Box'), (u'CC-CR', u'NP', u'<unknown>'), (u']', u'SYM', u']'), (u'Small', u'NP', u'Small'), (u'Islands', u'NPS', u'Islands'), (u'Snow', u'NP', u'Snow'), (u'&', u'CC', u'&'), (u'Ice', u'NP', u'Ice'), (u',', u',', u','), (u'Rivers', u'NP', u'Rivers'), (u'&', u'CC', u'&'), (u'Lakes', u'NP', u'Lakes'), (u',', u',', u','), (u'Floods', u'NP', u'<unknown>'), (u'&', u'CC', u'&'), (u'Drought', u'NP', u'<unknown>'), (u'Terrestrial', u'NP', u'<unknown>'), (u'Ecosystems', u'NP', u'<unknown>'), (u'Coastal', u'NP', u'Coastal'), (u'Erosion', u'NP', u'<unknown>'), (u'&', u'CC', u'&'), (u'Marine', u'NP', u'Marine'), (u'Ecosystems', u'NP', u'<unknown>'), (u'Food', u'NP', u'Food'), (u'Production', u'NP', u'Production'), (u'&', u'CC', u'&'), (u'Livelihoods', u'NP', u'<unknown>')]
+    infn3 = "/home/pablo/projects/clm/ipcc_norm_wk/results_06032016/CSV_06032016_ttg/AR4_WG2_SPM.csv"
+    sts3 = detokenize_ttg_sentences(infn3)
     # vocab loading
     vbs = load_vocabs(cf)
 
