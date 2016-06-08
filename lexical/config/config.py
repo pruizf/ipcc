@@ -16,32 +16,26 @@ sys.path.append(configdir)
 
 
 # CORPUS
-corpuspath = "/home/pablo/projects/clm/ipcc_norm_wk/CSV_06032016"
 ttgpath = "/home/pablo/projects/clm/ipcc_norm_wk/results_06032016/CSV_06032016_ttg"
-# chosen files as is in ttgpath, but need to find recursively under corpuspath
 chosenfilespath = os.path.join(configdir, "sort_filenames.txt")
-for mypath in (corpuspath, ttgpath, chosenfilespath):
+for mypath in (ttgpath, chosenfilespath):
     assert os.path.exists(mypath)
 
 
 # DATA
 datapath = os.path.join(os.path.join(configdir, os.pardir), "data")
 datakeys = {
-    "ADJ": {"fn": "adjectives.txt", "ltype": "inf", "tag": r"J.*", "runon": "ttg"},
-    "ADV": {"fn": "adverbs.txt", "ltype": "inf", "tag": r"[RJ].*",  "runon": "ttg"},
-    "AGR": {"fn": "agreement.txt", "ltype": "fml", "tag": None, "runon": "txt"},
-    "CNF": {"fn": "confidence.txt", "ltype": "fml", "tag": None, "runon": "txt"},
-    "EVI": {"fn": "evidence.txt", "ltype": "fml", "tag": None, "runon": "txt"},
-    "LXV": {"fn": "lexverbs.txt", "ltype": "inf", "tag": r"V.*", "runon": "ttg"},
-    "LKL": {"fn": "likelihood.txt", "ltype": "fml", "tag": None, "runon": "txt"},
-    "MDL": {"fn": "modal.txt", "ltype": "inf", "tag": r"MD", "runon": "ttg"},
-    "PHR": {"fn": "phrases.txt", "ltype": "inf", "tag": None, "runon": "txt"},
-    "PRP": {"fn": "prepositions.txt", "ltype": "inf", "tag": r"IN", "runon": "ttg"}
+    "ADJ": {"fn": "adjectives.txt", "ltype": "inf", "tag": r"J.*"},
+    "ADV": {"fn": "adverbs.txt", "ltype": "inf", "tag": r"[RJ].*"},
+    "AGR": {"fn": "agreement.txt", "ltype": "fml", "tag": None},
+    "CNF": {"fn": "confidence.txt", "ltype": "fml", "tag": None},
+    "EVI": {"fn": "evidence.txt", "ltype": "fml", "tag": None},
+    "LXV": {"fn": "lexverbs.txt", "ltype": "inf", "tag": r"V.*"},
+    "LKL": {"fn": "likelihood.txt", "ltype": "fml", "tag": None},
+    "MDL": {"fn": "modal.txt", "ltype": "inf", "tag": r"MD"},
+    "PHR": {"fn": "phrases.txt", "ltype": "inf", "tag": None},
+    "PRP": {"fn": "prepositions.txt", "ltype": "inf", "tag": r"IN"}
 }
-
-for ke in datakeys:
-    assert not (datakeys[ke]["tag"] is not None and
-                datakeys[ke]["runon"] != "ttg")
 
 # apply vocab lists in this order
 vocorder = ["LKL", "CNF", "EVI", "AGR", "MDL", "LXV", "ADV", "ADJ", "PRP", "PHR"]

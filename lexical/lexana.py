@@ -224,10 +224,5 @@ def main(cfg, indir, ofn=None):
 
 
 if __name__ == "__main__":
-    SUFFIX = 40
+    SUFFIX = 42
     main(cf, cf.ttgpath)
-    # vocab = ut.load_vocabs(cf)
-    # lcs, tcs, scs, nscs = tag_vocab_dir(vocab, cf, cf.ttgpath)
-    # #outfn = cf.ttgpath + "_{}_lexana.tsv".format("fn2term")
-    # write_fn2item(lcs, vocab, cf, cf.ttgpath)
-    # write_sentences(nscs, vocab, cf, cf.ttgpath)
