@@ -109,10 +109,10 @@ def update_counts(di, ke1, amount=1, ke2=None, sent=None):
 def write_fn2item(di, vcb, cfg, idir, ofn=None):
     """
     Write out di infos, filenames on rows, items (% and fq) on columns
-    @di: dict with lexical extraction results
-    @vcb: vocabulary that was applied
-    @cfg: config module in use
-    @ofn: full file path to output file
+    @param di: dict with lexical extraction results
+    @param vcb: vocabulary that was applied
+    @param cfg: config module in use
+    @param ofn: full file path to output file
     """
     if ofn is None:
         ofn = idir + "_fn2term_lexana_{}.tsv".format(SUFFIX)
