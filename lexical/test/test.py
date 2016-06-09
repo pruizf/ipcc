@@ -67,7 +67,8 @@ if __name__ == "__main__":
     try:
         sysfn = sys.argv[1]
     except IndexError:
-        sysfn = "/home/pablo/projects/clm/ipcc_norm_wk/results_06032016/CSV_06032016_ttg_fn2term_lexana_42.tsv"
+        sysfn = "/home/pablo/projects/clm/ipcc_norm_wk/copied_from_39.tsv"
+        # sysfn = "/home/pablo/projects/clm/ipcc_norm_wk/results_06032016/CSV_06032016_ttg_fn2term_lexana_42.tsv"
         # sysfn = "/home/pablo/projects/clm/ipcc_norm_wk/test_results.tsv"
     gr = parse_results(goldfn)
     sr = parse_results(sysfn)
